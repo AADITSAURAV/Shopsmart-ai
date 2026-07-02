@@ -1,4 +1,16 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: shopsmart-db
+    environment:
+      POSTGRES_USER: shopsmart
+      POSTGRES_PASSWORD: shopsmart
+      POSTGRES_DB: shopsmart
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
   backend:
     build: ./backend
     container_name: shopsmart-backend
@@ -6,3 +18,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/app:/code/app
+
+volumes:
+  db_data:
+     
