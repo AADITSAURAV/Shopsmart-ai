@@ -19,6 +19,14 @@ services:
     volumes:
       - ./backend/app:/code/app
 
+  frontend:
+    build: ./frontend
+    container_name: shopsmart-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+
 volumes:
   db_data:
-     
