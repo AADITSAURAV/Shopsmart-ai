@@ -10,3 +10,5 @@ venv/
 # OS/editor noise
 .DS_Store
 .vscode/
+# Dataset - too large for git, not ours to redistribute
+data/*.csv
