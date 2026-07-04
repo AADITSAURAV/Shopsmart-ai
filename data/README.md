@@ -4,8 +4,8 @@
 
 ## How to get it
 
-1. Download from the Kaggle link above (free account required)
-2. Extract the zip
+1. Download Kaggle dataset from the above link
+2. Extract the zip file
 3. Place the CSV here as `data/BigBasket Products.csv`
 4. Run the import script: `docker compose exec backend python -m app.import_data`
 
