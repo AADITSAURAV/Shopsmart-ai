@@ -1,19 +1,12 @@
+import os
+
 import pandas as pd
+from sqlalchemy.orm import Session
 
 from app.database import engine
 from app.models import Base, Product
 
-# Create the products table if it doesn't exist yet
-Base.metadata.create_all(engine)
-
-# Read the CSV
-df = pd.read_csv("/code/data/BigBasket Products.csv")
-
-# Drop rows with no product name or no brand - can't recommend
-# something we can't identify or filter by
-df = df.dropna(subset=["product", "brand"])
-
-from sqlalchemy.orm import Session
+CSV_PATH = "/code/data/BigBasket Products.csv"
 
 CATEGORY_ICONS = {
     "Beauty & Hygiene": "/icons/beauty.png",
@@ -29,20 +22,50 @@ CATEGORY_ICONS = {
     "Eggs, Meat & Fish": "/icons/meat.png",
 }
 
-with Session(engine) as session:
-    count = 0
-    for _, row in df.iterrows():
-        product = Product(
-            name=row["product"],
-            category=row["category"],
-            brand=row["brand"],
-            price=row["sale_price"],
-            rating=row["rating"] if pd.notna(row["rating"]) else None,
-            description=row["description"] if pd.notna(row["description"]) else "",
-            image_url=CATEGORY_ICONS.get(row["category"], "/icons/default.png"),
-        )
-        session.add(product)
-        count += 1
 
-    session.commit()
-    print(f"Imported {count} products")
+def import_products():
+    """
+    Loads the BigBasket CSV into the products table.
+
+    Safe to call every time the app starts:
+    - if the table already has rows, does nothing (no duplicates)
+    - if the CSV file isn't there yet, does nothing (no crash on a
+      fresh clone before someone's downloaded the dataset)
+    """
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        existing_count = session.query(Product).count()
+        if existing_count > 0:
+            print(f"Products table already has {existing_count} rows, skipping import")
+            return
+
+    if not os.path.exists(CSV_PATH):
+        print(f"Dataset not found at {CSV_PATH}, skipping import")
+        print("See data/README.md for download instructions")
+        return
+
+    df = pd.read_csv(CSV_PATH)
+    df = df.dropna(subset=["product", "brand"])
+
+    with Session(engine) as session:
+        count = 0
+        for _, row in df.iterrows():
+            product = Product(
+                name=row["product"],
+                category=row["category"],
+                brand=row["brand"],
+                price=row["sale_price"],
+                rating=row["rating"] if pd.notna(row["rating"]) else None,
+                description=row["description"] if pd.notna(row["description"]) else "",
+                image_url=CATEGORY_ICONS.get(row["category"], "/icons/default.png"),
+            )
+            session.add(product)
+            count += 1
+
+        session.commit()
+        print(f"Imported {count} products")
+
+
+if __name__ == "__main__":
+    import_products()

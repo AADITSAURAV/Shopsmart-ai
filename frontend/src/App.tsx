@@ -1,30 +1,42 @@
-import { useEffect, useState } from 'react'
-
-const API_URL = 'http://localhost:8000'
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
+import Home from './pages/Home'
+import RecommendForm from './pages/RecommendForm'
+import RecommendResults from './pages/RecommendResults'
+import About from './pages/About'
 
 function App() {
-  const [apiStatus, setApiStatus] = useState('checking')
-  const [dbStatus, setDbStatus] = useState('checking')
-
-  useEffect(() => {
-    fetch(`${API_URL}/health`)
-      .then((res) => res.json())
-      .then(() => setApiStatus('online'))
-      .catch(() => setApiStatus('offline'))
-
-    fetch(`${API_URL}/health/db`)
-      .then((res) => res.json())
-      .then((data) => setDbStatus(data.database_connected ? 'connected' : 'disconnected'))
-      .catch(() => setDbStatus('disconnected'))
-  }, [])
-
   return (
-    <div style={{ fontFamily: 'sans-serif', textAlign: 'center', marginTop: '3rem' }}>
-      <h1>ShopSmart AI</h1>
-      <p>Frontend container: running</p>
-      <p>Backend API: {apiStatus}</p>
-      <p>Database: {dbStatus}</p>
-    </div>
+    <BrowserRouter>
+      <div className="app-wrapper">
+        <nav className="navbar">
+          <div className="nav-container">
+            <NavLink to="/" className="nav-brand">
+              🥦 ShopSmart AI
+            </NavLink>
+            <ul className="nav-links">
+              <li>
+                <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>Home</NavLink>
+              </li>
+              <li>
+                <NavLink to="/recommend" className={({ isActive }) => isActive ? 'active' : ''}>Get Recommendations</NavLink>
+              </li>
+              <li>
+                <NavLink to="/about" className={({ isActive }) => isActive ? 'active' : ''}>About</NavLink>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/recommend" element={<RecommendForm />} />
+            <Route path="/results" element={<RecommendResults />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   )
 }
 

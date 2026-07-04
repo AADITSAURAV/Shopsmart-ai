@@ -8,6 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sqlalchemy.orm import Session
 
 from app.database import check_database_connection, get_db
+from app.import_data import import_products
 from app.models import Product
 
 app = FastAPI(title="ShopSmart AI API")
@@ -20,14 +21,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.on_event("startup")
+def startup_event():
+    # Makes the project genuinely plug-and-play: on a fresh clone, this
+    # loads the dataset automatically instead of requiring a manual command.
+    # Safe to run every time - does nothing if data's already there.
+    import_products()
+
+
 # Load the trained model once when the server starts, not on every request
 ml_data = joblib.load("app/ml_model.joblib")
 vectorizer = ml_data["vectorizer"]
 tfidf_matrix = ml_data["matrix"]
 product_ids = ml_data["product_ids"]
 
-# Maps a product's database id to its row number in tfidf_matrix,
-# so we can look up any product's pre-computed vector instantly
 id_to_row = {pid: i for i, pid in enumerate(product_ids)}
 
 
@@ -85,9 +93,6 @@ def recommend(request: RecommendRequest, db: Session = Depends(get_db)):
 
     products = query.limit(200).all()
 
-    # If the user described what they're looking for, turn that phrase
-    # into the same kind of vector every product description already has,
-    # so we can compare "meaning" between the two, not just exact words
     query_vector = None
     if request.purpose:
         query_vector = vectorizer.transform([request.purpose])
@@ -103,10 +108,8 @@ def recommend(request: RecommendRequest, db: Session = Depends(get_db)):
             text_score = cosine_similarity(query_vector, tfidf_matrix[row])[0][0]
 
         if query_vector is not None:
-            # A purpose was given - text match matters most
             match_score = round((text_score * 0.5 + rating_score * 0.3 + price_score * 0.2) * 100, 1)
         else:
-            # No purpose given - fall back to rating/price only
             match_score = round((rating_score * 0.6 + price_score * 0.4) * 100, 1)
 
         reasons = []
