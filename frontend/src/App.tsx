@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import Home from './pages/Home'
 import RecommendForm from './pages/RecommendForm'
 import RecommendResults from './pages/RecommendResults'
+import ProductDetail from './pages/ProductDetail'
 import About from './pages/About'
 
 function App() {
@@ -11,7 +12,7 @@ function App() {
         <nav className="navbar">
           <div className="nav-container">
             <NavLink to="/" className="nav-brand">
-              🥦 ShopSmart AI
+              ShopSmart AI
             </NavLink>
             <ul className="nav-links">
               <li>
@@ -32,6 +33,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/recommend" element={<RecommendForm />} />
             <Route path="/results" element={<RecommendResults />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/about" element={<About />} />
           </Routes>
         </main>

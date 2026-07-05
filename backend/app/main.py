@@ -1,7 +1,7 @@
 from typing import Optional
 
 import joblib
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sklearn.metrics.pairwise import cosine_similarity
@@ -24,9 +24,6 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup_event():
-    # Makes the project genuinely plug-and-play: on a fresh clone, this
-    # loads the dataset automatically instead of requiring a manual command.
-    # Safe to run every time - does nothing if data's already there.
     import_products()
 
 
@@ -70,6 +67,49 @@ def get_products(
         query = query.filter(Product.rating >= min_rating)
 
     return query.limit(50).all()
+
+
+@app.get("/products/{product_id}")
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+
+@app.get("/products/{product_id}/similar")
+def get_similar_products(product_id: int, db: Session = Depends(get_db)):
+    """
+    Finds products with the most similar descriptions to this one,
+    using the same trained TF-IDF model that powers /recommend.
+    This is content-based "similar items" - not collaborative filtering,
+    since we have no purchase history to base that on (see data/README.md).
+    """
+    if product_id not in id_to_row:
+        raise HTTPException(status_code=404, detail="Product not found in model")
+
+    row = id_to_row[product_id]
+    similarities = cosine_similarity(tfidf_matrix[row], tfidf_matrix)[0]
+
+    # Rank every product by similarity, skipping the product itself
+    ranked_indices = similarities.argsort()[::-1]
+    similar_ids = []
+    for idx in ranked_indices:
+        candidate_id = product_ids[idx]
+        if candidate_id == product_id:
+            continue
+        similar_ids.append(candidate_id)
+        if len(similar_ids) >= 4:
+            break
+
+    similar_products = db.query(Product).filter(Product.id.in_(similar_ids)).all()
+
+    # The database doesn't preserve the order of an "in" filter, so
+    # re-sort the results to match the similarity ranking above
+    order = {pid: i for i, pid in enumerate(similar_ids)}
+    similar_products.sort(key=lambda p: order.get(p.id, 999))
+
+    return similar_products
 
 
 class RecommendRequest(BaseModel):
