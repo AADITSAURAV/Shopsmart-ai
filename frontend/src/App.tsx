@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { CartProvider, useCart } from './CartContext'
-import Home from './pages/Home'
 import RecommendForm from './pages/RecommendForm'
 import RecommendResults from './pages/RecommendResults'
 import ProductDetail from './pages/ProductDetail'
@@ -38,12 +37,6 @@ function App() {
               </NavLink>
               <ul className="nav-links">
                 <li>
-                  <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>Home</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/recommend" className={({ isActive }) => isActive ? 'active' : ''}>Get Recommendations</NavLink>
-                </li>
-                <li>
                   <NavCartLink />
                 </li>
               </ul>
@@ -52,8 +45,7 @@ function App() {
 
           <main className="main-content">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/recommend" element={<RecommendForm />} />
+              <Route path="/" element={<RecommendForm />} />
               <Route path="/results" element={<RecommendResults />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />

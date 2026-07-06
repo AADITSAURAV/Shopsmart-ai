@@ -32,7 +32,7 @@ export default function RecommendResults() {
         <p style={{ color: '#64748b', marginBottom: '2rem' }}>
           We couldn't track down exact matches matching your criteria. Try loosening up your budget or switching category descriptions.
         </p>
-        <Link to="/recommend" className="btn">Adjust Filters</Link>
+        <Link to="/" className="btn">Adjust Filters</Link>
       </div>
     )
   }
@@ -44,7 +44,7 @@ export default function RecommendResults() {
           <h2 style={{ fontSize: '1.75rem' }}>Your Recommended Picks</h2>
           <p style={{ color: '#64748b' }}>AI-ranked options matching your explicit goals</p>
         </div>
-        <Link to="/recommend" className="btn btn-secondary">Search Again</Link>
+        <Link to="/" className="btn btn-secondary">Search Again</Link>
       </div>
 
       <div className="grid-cards">

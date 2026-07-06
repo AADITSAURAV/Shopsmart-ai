@@ -61,14 +61,14 @@ export default function ProductDetail() {
       <div className="card" style={{ textAlign: 'center', maxWidth: '500px', margin: '4rem auto', padding: '3rem 2rem' }}>
         <h3>Product not found</h3>
         <p style={{ color: '#64748b', marginBottom: '2rem' }}>{error || 'This product does not exist.'}</p>
-        <Link to="/recommend" className="btn">Back to Search</Link>
+        <Link to="/" className="btn">Back to Search</Link>
       </div>
     )
   }
 
   return (
     <div>
-      <Link to="/recommend" style={{ display: 'inline-block', marginBottom: '1.5rem', color: '#2563eb', textDecoration: 'none' }}>
+      <Link to="/" style={{ display: 'inline-block', marginBottom: '1.5rem', color: '#2563eb', textDecoration: 'none' }}>
         Back to search
       </Link>
 

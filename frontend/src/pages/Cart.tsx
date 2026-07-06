@@ -37,7 +37,7 @@ export default function Cart() {
         <p style={{ color: '#64748b', marginBottom: '2rem' }}>
           Add some products from your recommendations to see them here.
         </p>
-        <Link to="/recommend" className="btn">Get Recommendations</Link>
+        <Link to="/" className="btn">Get Recommendations</Link>
       </div>
     )
   }
