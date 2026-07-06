@@ -27,7 +27,6 @@ def startup_event():
     import_products()
 
 
-# Load the trained model once when the server starts, not on every request
 ml_data = joblib.load("app/ml_model.joblib")
 vectorizer = ml_data["vectorizer"]
 tfidf_matrix = ml_data["matrix"]
@@ -79,19 +78,12 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 
 @app.get("/products/{product_id}/similar")
 def get_similar_products(product_id: int, db: Session = Depends(get_db)):
-    """
-    Finds products with the most similar descriptions to this one,
-    using the same trained TF-IDF model that powers /recommend.
-    This is content-based "similar items" - not collaborative filtering,
-    since we have no purchase history to base that on (see data/README.md).
-    """
     if product_id not in id_to_row:
         raise HTTPException(status_code=404, detail="Product not found in model")
 
     row = id_to_row[product_id]
     similarities = cosine_similarity(tfidf_matrix[row], tfidf_matrix)[0]
 
-    # Rank every product by similarity, skipping the product itself
     ranked_indices = similarities.argsort()[::-1]
     similar_ids = []
     for idx in ranked_indices:
@@ -104,12 +96,50 @@ def get_similar_products(product_id: int, db: Session = Depends(get_db)):
 
     similar_products = db.query(Product).filter(Product.id.in_(similar_ids)).all()
 
-    # The database doesn't preserve the order of an "in" filter, so
-    # re-sort the results to match the similarity ranking above
     order = {pid: i for i, pid in enumerate(similar_ids)}
     similar_products.sort(key=lambda p: order.get(p.id, 999))
 
     return similar_products
+
+
+@app.get("/products/{product_id}/alternatives")
+def get_better_alternatives(product_id: int, db: Session = Depends(get_db)):
+    """
+    Finds a genuinely comparable, higher-rated alternative.
+
+    Filters by the real constraints FIRST (same category, higher rated,
+    sanely priced) directly in the database - this guarantees every real
+    candidate gets considered. The TF-IDF model is only used afterward,
+    to rank which of those real candidates is most similar in nature.
+    """
+    current = db.query(Product).filter(Product.id == product_id).first()
+    if not current or current.rating is None:
+        return []
+
+    candidates = (
+        db.query(Product)
+        .filter(Product.category == current.category)
+        .filter(Product.rating.isnot(None))
+        .filter(Product.rating > current.rating)
+        .filter(Product.price <= current.price * 1.5)
+        .filter(Product.id != product_id)
+        .all()
+    )
+
+    if not candidates:
+        return []
+
+    if product_id in id_to_row:
+        row = id_to_row[product_id]
+        similarities = cosine_similarity(tfidf_matrix[row], tfidf_matrix)[0]
+        candidates.sort(
+            key=lambda p: similarities[id_to_row[p.id]] if p.id in id_to_row else 0,
+            reverse=True,
+        )
+    else:
+        candidates.sort(key=lambda p: p.rating, reverse=True)
+
+    return candidates[:3]
 
 
 class RecommendRequest(BaseModel):

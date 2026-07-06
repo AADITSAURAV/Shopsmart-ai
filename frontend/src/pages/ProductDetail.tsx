@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useCart } from '../CartContext'
 
 interface Product {
   id: number
@@ -22,6 +23,7 @@ function getFallbackColor(category: string) {
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>()
+  const { addToCart } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
   const [similar, setSimilar] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -96,10 +98,25 @@ export default function ProductDetail() {
         </div>
 
         {product.description && (
-          <p style={{ color: '#475569', lineHeight: 1.6, marginTop: '1rem' }}>
+          <p style={{ color: '#475569', lineHeight: 1.6, marginTop: '1rem', marginBottom: '1.5rem' }}>
             {product.description}
           </p>
         )}
+
+        <button
+          onClick={() =>
+            addToCart({
+              id: product.id,
+              name: product.name,
+              brand: product.brand,
+              price: product.price,
+              rating: product.rating,
+            })
+          }
+          className="btn"
+        >
+          Add to Cart
+        </button>
       </div>
 
       {similar.length > 0 && (

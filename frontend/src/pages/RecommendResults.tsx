@@ -1,4 +1,5 @@
 import { useLocation, Link } from 'react-router-dom'
+import { useCart } from '../CartContext'
 
 interface Product {
   id: number
@@ -16,6 +17,7 @@ interface Product {
 export default function RecommendResults() {
   const location = useLocation()
   const results = (location.state?.results as Product[]) || []
+  const { addToCart } = useCart()
 
   const getFallbackColor = (category: string) => {
     const hash = category.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
@@ -109,9 +111,27 @@ export default function RecommendResults() {
                   )}
                 </div>
 
-                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem', color: '#475569' }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '0.75rem', borderRadius: '6px', fontSize: '0.85rem', color: '#475569', marginBottom: '1rem' }}>
                   <strong>AI Match Check:</strong> {product.reason}
                 </div>
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    addToCart({
+                      id: product.id,
+                      name: product.name,
+                      brand: product.brand,
+                      price: product.price,
+                      rating: product.rating,
+                    })
+                  }}
+                  className="btn"
+                  style={{ width: '100%' }}
+                >
+                  Add to Cart
+                </button>
               </div>
 
             </Link>
