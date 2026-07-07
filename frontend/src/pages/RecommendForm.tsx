@@ -9,6 +9,12 @@ interface FormState {
   min_rating: string
 }
 
+/**
+ * This is the main page of my whole app - the recommendation form
+ * itself. Collects budget, category, brand, purpose, and minimum
+ * rating, then POSTs all of it to /recommend and takes you to /results
+ * with whatever comes back.
+ */
 export default function RecommendForm() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState<FormState>({
@@ -30,11 +36,13 @@ export default function RecommendForm() {
 
   const ratings = ["3", "3.5", "4", "4.5"]
 
+  /** Just updates whichever field changed - one handler for the whole form. */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  /** Sends the form to POST /recommend and routes to /results with whatever it gets back. */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -82,7 +90,7 @@ export default function RecommendForm() {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="budget">Maximum Budget (₹) *</label>
+          <label htmlFor="budget">Maximum Budget (Rs.) *</label>
           <input
             id="budget"
             type="number"
@@ -146,7 +154,7 @@ export default function RecommendForm() {
             onChange={handleChange}
           >
             <option value="">Any Rating</option>
-            {ratings.map(rate => <option key={rate} value={rate}>{rate}★ & up</option>)}
+            {ratings.map(rate => <option key={rate} value={rate}>{rate} stars & up</option>)}
           </select>
         </div>
 

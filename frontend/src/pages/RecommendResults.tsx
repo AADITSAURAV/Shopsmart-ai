@@ -14,11 +14,19 @@ interface Product {
   reason: string
 }
 
+/**
+ * Shows the ranked results that come back from the recommendation
+ * form. I read them from router state instead of fetching them again
+ * here - RecommendForm already got the data, so there's no reason to
+ * hit the API twice. Each card links to that product's own page, and
+ * has its own Add to Cart button.
+ */
 export default function RecommendResults() {
   const location = useLocation()
   const results = (location.state?.results as Product[]) || []
   const { addToCart } = useCart()
 
+  /** Picks a consistent color per category so the little icon circles don't all look the same. */
   const getFallbackColor = (category: string) => {
     const hash = category.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
     const colors = ['#e11d48', '#2563eb', '#16a34a', '#d97706', '#7c3aed', '#db2777', '#059669', '#4f46e5']

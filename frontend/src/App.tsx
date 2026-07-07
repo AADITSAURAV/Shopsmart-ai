@@ -5,6 +5,7 @@ import RecommendResults from './pages/RecommendResults'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
 
+/** Simple shopping cart icon, drawn as inline SVG so I don't need an image file for it. */
 function CartIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -15,6 +16,11 @@ function CartIcon() {
   )
 }
 
+/**
+ * The Cart link in the nav bar. Pulls the live item count from
+ * CartContext so it shows something like "Cart (2)" instead of just
+ * "Cart" once you've added something.
+ */
 function NavCartLink() {
   const { items } = useCart()
   return (
@@ -24,6 +30,13 @@ function NavCartLink() {
   )
 }
 
+/**
+ * Root of the whole app. Wraps everything in CartProvider so any page
+ * can read/update the cart, and sets up all the routes. "/" is the
+ * recommendation form itself - I deliberately don't have a separate
+ * landing page, since I want this to be a direct recommendation tool,
+ * not something you have to click through to get to.
+ */
 function App() {
   return (
     <CartProvider>

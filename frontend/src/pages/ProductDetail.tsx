@@ -15,12 +15,21 @@ interface Product {
 
 const API_URL = 'http://localhost:8000'
 
+/** Picks a consistent color per category for the fallback icon circle. */
 function getFallbackColor(category: string) {
   const hash = category.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
   const colors = ['#e11d48', '#2563eb', '#16a34a', '#d97706', '#7c3aed', '#db2777', '#059669', '#4f46e5']
   return colors[hash % colors.length]
 }
 
+/**
+ * Shows one product's full details, and its "similar products" section
+ * underneath. Both fetches happen in parallel with Promise.all since
+ * they don't depend on each other - no reason to wait for one before
+ * starting the other. Clicking a similar product takes you to that
+ * product's own detail page, which is why this page can be reached
+ * recursively, not just from search results.
+ */
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>()
   const { addToCart } = useCart()

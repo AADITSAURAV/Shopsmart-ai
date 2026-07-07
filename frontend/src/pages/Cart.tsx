@@ -12,6 +12,13 @@ interface Alternative {
   rating: number | null
 }
 
+/**
+ * Shows everything currently in the cart. For each item, I separately
+ * fetch its "better alternative" from /products/:id/alternatives - one
+ * fetch per item, not all at once, since each product needs its own
+ * lookup. If an item already has its alternatives cached in state, the
+ * effect skips re-fetching it.
+ */
 export default function Cart() {
   const { items, removeFromCart } = useCart()
   const [alternatives, setAlternatives] = useState<Record<number, Alternative[]>>({})
