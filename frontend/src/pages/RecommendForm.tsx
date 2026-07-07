@@ -57,7 +57,7 @@ export default function RecommendForm() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/recommend', {
+      const response = await fetch('/api/recommend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

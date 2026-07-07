@@ -1,3 +1,5 @@
+import os
+import time
 from typing import Optional
 
 import joblib
@@ -29,14 +31,29 @@ def startup_event():
     is empty and loads the dataset in if so - I added this so I don't
     have to manually run the import script every time I clone this
     somewhere new. If data's already there, it just skips this.
+
+    Retries a few times with a short sleep because Postgres can be
+    accepting TCP connections (passing the healthcheck) while still
+    finishing internal initialization - this closes that small race
+    window without any manual intervention.
     """
-    import_products()
+    for attempt in range(1, 4):
+        try:
+            import_products()
+            break
+        except Exception as e:
+            if attempt < 3:
+                print(f"Startup attempt {attempt} failed ({e}), retrying in 2s...")
+                time.sleep(2)
+            else:
+                print(f"Startup failed after 3 attempts: {e}")
 
 
 # Loading the trained model once here at startup, not inside each
 # request - that would be way too slow. See train_model.py for how
 # this file actually got built.
-ml_data = joblib.load("app/ml_model.joblib")
+_MODEL_PATH = os.path.join(os.path.dirname(__file__), "ml_model.joblib")
+ml_data = joblib.load(_MODEL_PATH)
 vectorizer = ml_data["vectorizer"]
 tfidf_matrix = ml_data["matrix"]
 product_ids = ml_data["product_ids"]

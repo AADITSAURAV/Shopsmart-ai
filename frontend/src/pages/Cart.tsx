@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../CartContext'
 
-const API_URL = 'http://localhost:8000'
+const API_URL = '/api'
 
 interface Alternative {
   id: number

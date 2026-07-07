@@ -10,6 +10,12 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopsmart -d shopsmart"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   backend:
     build: ./backend
@@ -19,6 +25,9 @@ services:
     volumes:
       - ./backend/app:/code/app
       - ./data:/code/data
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build: ./frontend
@@ -28,6 +37,8 @@ services:
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/index.html:/app/index.html
+    depends_on:
+      - backend
 
 volumes:
   db_data:

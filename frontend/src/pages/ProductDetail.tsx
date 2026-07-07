@@ -13,7 +13,7 @@ interface Product {
   image_url: string
 }
 
-const API_URL = 'http://localhost:8000'
+const API_URL = '/api'
 
 /** Picks a consistent color per category for the fallback icon circle. */
 function getFallbackColor(category: string) {
