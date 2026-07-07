@@ -90,3 +90,32 @@ frontend folder:
     - RecommendResults.tsx
     - ProductDetail.tsx
     - Cart.tsx
+
+    ## API Documentation
+
+The backend exposes 6 endpoints. Interactive docs are also available at http://localhost:8000/docs once running (FastAPI generates this automatically).
+
+GET /health
+Basic check that the API process is running. Returns status ok.
+
+GET /health/db
+Separately checks that the database is reachable. Returns database_connected true or false. This is split from /health because the API can be running while the database connection has a problem, and that is a different failure to diagnose.
+
+GET /products
+Returns up to 50 products. Optional query parameters: category, brand, max_price, min_rating. All are optional and combine together. Calling with none returns unfiltered results.
+
+GET /products/{product_id}
+Returns full details for one product by id. Returns 404 if it does not exist.
+
+GET /products/{product_id}/similar
+Returns the 4 products with the most similar descriptions to this one, using the trained TF-IDF model and cosine similarity. This is content-based matching on the product text, not based on purchase history.
+
+GET /products/{product_id}/alternatives
+Returns up to 3 alternatives that are genuinely better: same category as the original, rated higher, and priced no more than 1.5 times the original price. Powers the Better rated alternative box shown on the Cart page.
+
+POST /recommend
+The main recommendation endpoint. Request body: budget (required number), category, brand, min_rating, purpose (all optional).
+
+Filters products by budget, category, brand, and minimum rating, then scores each result out of 100. If purpose is given, the score is 50 percent text similarity between the purpose phrase and the product description, 30 percent rating, 20 percent how far under budget the product is. If no purpose is given, the score falls back to 60 percent rating and 40 percent budget headroom.
+
+Returns the top 20 results sorted by score, each with a plain-English reason explaining why it was recommended.
