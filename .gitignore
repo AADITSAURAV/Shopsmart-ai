@@ -10,5 +10,12 @@ venv/
 # OS/editor noise
 .DS_Store
 .vscode/
+
 # Node
 node_modules/
+
+# Dataset — full CSV is too large to commit and not ours to redistribute
+data/BigBasket Products.csv
+
+# Sample dataset is intentionally committed (small, our own data)
+!data/sample_products.csv

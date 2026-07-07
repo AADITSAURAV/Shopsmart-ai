@@ -7,6 +7,7 @@ from app.database import engine
 from app.models import Base, Product
 
 CSV_PATH = "/code/data/BigBasket Products.csv"
+SAMPLE_CSV_PATH = "/code/data/sample_products.csv"
 
 CATEGORY_ICONS = {
     "Beauty & Hygiene": "/icons/beauty.png",
@@ -25,12 +26,15 @@ CATEGORY_ICONS = {
 
 def import_products():
     """
-    Loads the BigBasket CSV into the products table.
+    Loads products into the products table on first startup.
+
+    Priority order:
+    1. Full BigBasket CSV (if present at /code/data/BigBasket Products.csv)
+    2. Bundled sample dataset (always present at /code/data/sample_products.csv)
 
     Safe to call every time the app starts:
     - if the table already has rows, does nothing (no duplicates)
-    - if the CSV file isn't there yet, does nothing (no crash on a
-      fresh clone before someone's downloaded the dataset)
+    - if neither CSV is found, logs a clear error and returns
     """
     Base.metadata.create_all(engine)
 
@@ -40,13 +44,36 @@ def import_products():
             print(f"Products table already has {existing_count} rows, skipping import")
             return
 
-    if not os.path.exists(CSV_PATH):
+    # Determine which CSV to use
+    if os.path.exists(CSV_PATH):
+        path_to_use = CSV_PATH
+        is_sample = False
+    elif os.path.exists(SAMPLE_CSV_PATH):
+        path_to_use = SAMPLE_CSV_PATH
+        is_sample = True
+        print("=" * 60)
+        print("NOTE: Full dataset not found. Loading bundled sample data")
+        print("      (~70 products across all categories).")
+        print("      For the full 27,000+ product experience, download")
+        print("      BigBasket Products.csv — see data/README.md")
+        print("=" * 60)
+    else:
         print(f"Dataset not found at {CSV_PATH}, skipping import")
         print("See data/README.md for download instructions")
         return
 
-    df = pd.read_csv(CSV_PATH)
+    df = pd.read_csv(path_to_use)
     df = df.dropna(subset=["product", "brand"])
+
+    # Normalise category names: the sample CSV uses '; ' as separator
+    # (to avoid CSV quoting issues with '&'), map back to canonical names
+    category_aliases = {
+        "Kitchen; Garden & Pets": "Kitchen, Garden & Pets",
+        "Foodgrains; Oil & Masala": "Foodgrains, Oil & Masala",
+        "Bakery; Cakes & Dairy": "Bakery, Cakes & Dairy",
+        "Eggs; Meat & Fish": "Eggs, Meat & Fish",
+    }
+    df["category"] = df["category"].replace(category_aliases)
 
     with Session(engine) as session:
         count = 0
@@ -64,7 +91,8 @@ def import_products():
             count += 1
 
         session.commit()
-        print(f"Imported {count} products")
+        label = "sample" if is_sample else "full"
+        print(f"Imported {count} products from {label} dataset")
 
 
 if __name__ == "__main__":

@@ -40,24 +40,22 @@ The CSV itself isn't committed to this repo (see Setup below for how to get it) 
 Run: git clone https://github.com/AADITSAURAV/Shopsmart-ai.git
 Then: cd Shopsmart-ai
 
-2. Get the dataset
-
-Download BigBasket Products.csv from the Kaggle link above, and place it at:
-data/BigBasket Products.csv
-
-(See data/README.md for the exact download steps.)
-
-3. Run it
+2. Run it
 
 Run: docker compose up --build
 
-That's it. On first run, the backend automatically creates the database schema and imports all ~27,553 valid products - no manual import command needed. This also loads the already-trained ML model automatically.
+That's it. On first run the backend automatically creates the database schema and imports a bundled sample dataset (~70 products across all 11 categories) so the app is immediately usable with no manual setup.
 
-4. Open it
+3. Open it
 
 Open http://localhost:5173 in your browser.
 
 The app opens directly into the recommendation form - no landing page in between.
+
+### Optional: full 27,000+ product dataset
+
+For the complete experience, download BigBasket Products.csv from Kaggle (see Dataset section above) and place it at data/BigBasket Products.csv before running docker compose up --build. The backend detects and imports it automatically - no extra commands needed.
+
 
 ## Project structure
 
