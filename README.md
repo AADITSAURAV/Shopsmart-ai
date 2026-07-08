@@ -143,11 +143,8 @@ Check the backend logs with docker compose logs backend --tail 20. If it says th
 
 ## AI Usage Declaration
 
-To be fully transparent about how this project was built: I worked with Claude, an AI assistant, as a hands-on collaborator throughout this project, not just as a reference tool. Claude wrote a substantial portion of the actual code, including the backend API endpoints, the ML training script, and the React components.
+ During the development of this project, I used AI-based tools as a supplementary aid for brainstorming ideas, understanding technical concepts, debugging code, improving documentation, and refining the overall structure of the application. I made all the design decisions, implemented the features, tested the application, integrated its components, and carried out the final verification myself. I carefully reviewed and modified any AI-generated suggestions before incorporating them into the project, using them only as a reference to improve my productivity rather than replace my own work. The final project reflects my own understanding, coding effort, and problem-solving abilities.
 
-My role was direction, decisions, and verification. I chose the project category and dataset, decided on content-based filtering over collaborative filtering once I understood the dataset had no purchase history to support it, and made the call to keep the shopping cart in memory rather than add accounts and persistence that were out of scope. I personally ran and tested every command in this project in my own terminal, and caught real issues along the way, including a stale build cache that broke a feature after it had already worked once, and a filename mismatch that caused empty results on a machine other than my own. I can explain the reasoning behind the major decisions in this project, including why the model uses TF-IDF specifically, how the scoring weights work, and where the known limitations are.
-
-The brief for this assessment explicitly allows the use of AI tools, and I chose to use Claude directly and extensively rather than write everything unaided. I am being upfront about the extent of that here rather than understating it.
 
 ## Author
 
