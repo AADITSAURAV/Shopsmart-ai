@@ -34,10 +34,10 @@ Interactive API Documentation: http://localhost:8000/docs
 
 ## Documentation
 
-- [Installation & Setup](docs/Install.md)
+- [Installation & Setup](INSTALL.md)
+- [User Manual](docs/Usage.md)
 - [Project Architecture & Tech Stack](docs/Architecture.md)
 - [API Endpoints & Recommendation Engine Logic](docs/Api_response.md)
-
 ## How To Use
 
 Enter your preferences on the form: budget, category, brand, purpose, and minimum rating. Click Get Recommendations to see a ranked list of matching products, each with a match score and a plain-English reason. Click into any product to see its full details and similar products. Add items to your cart to see if a genuinely better-rated alternative exists for each one.
