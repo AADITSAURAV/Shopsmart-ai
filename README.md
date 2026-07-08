@@ -25,3 +25,48 @@ The scoring combines text similarity, rating, and how far under budget a product
 - Click into any product to see its full details and 4 similar products, powered by the same ML model
 - Add items to a cart, which shows a genuinely better-rated alternative for each item if one exists, same category, similar product, reasonably priced
 - Runs entirely with docker compose up, no manual setup beyond downloading the dataset
+
+## Technology Stack
+
+Backend
+- Python
+- FastAPI
+- SQLAlchemy
+- Psycopg2
+- Pandas
+- Scikit-learn
+
+Frontend
+- React
+- TypeScript
+- Vite
+- React Router
+
+Database
+- PostgreSQL
+
+DevOps
+- Docker
+- Docker Compose
+
+Development Tools
+- Visual Studio Code
+- Git
+- GitHub
+
+## Project Architecture
+
+User
+React Frontend
+REST API Requests
+FastAPI Backend
+Recommendation Engine, TF-IDF plus cosine similarity
+PostgreSQL Database
+
+The frontend never talks to the database directly. Every request goes through the backend first, which keeps the system organized and easier to maintain.
+
+## Application URLs
+
+Frontend: http://localhost:5173
+Backend API: http://localhost:8000
+Interactive API Documentation: http://localhost:8000/docs
