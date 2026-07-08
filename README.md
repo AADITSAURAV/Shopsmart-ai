@@ -26,140 +26,21 @@ The scoring combines text similarity, rating, and how far under budget a product
 - Add items to a cart, which shows a genuinely better-rated alternative for each item if one exists, same category, similar product, reasonably priced
 - Runs entirely with `docker compose up --build`, with zero manual setup required
 
-## Technology Stack
-
-Backend
-- Python
-- FastAPI
-- SQLAlchemy
-- Psycopg2
-- Pandas
-- Scikit-learn
-
-Frontend
-- React
-- TypeScript
-- Vite
-- React Router
-
-Database
-- PostgreSQL
-
-DevOps
-- Docker
-- Docker Compose
-
-Development Tools
-- Visual Studio Code
-- Git
-- GitHub
-
-## Project Architecture
-
-The application is split into three independent services, each running in its own Docker container, connected through a custom Docker network.
-
-    User
-      |
-      v
-    React Frontend (localhost:5173)
-      |
-      v  REST API requests
-    FastAPI Backend (localhost:8000)
-      |
-      v
-    Recommendation Engine
-    (TF-IDF + Cosine Similarity)
-      |
-      v
-    PostgreSQL Database
-
-The frontend never talks to the database directly. Every request goes through the backend first, which keeps the system organized and easier to maintain.
-
 ## Application URLs
 
 Frontend: http://localhost:5173
 Backend API: http://localhost:8000
 Interactive API Documentation: http://localhost:8000/docs
 
-## How To Install
+## Documentation
 
-The project is completely self-contained. You do not need to install Node, Python, or Postgres on your machine, and you do not need to manually download any datasets.
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/AADITSAURAV/Shopsmart-ai.git
-   cd Shopsmart-ai
-   ```
-
-2. **Run it with Docker**
-   ```bash
-   docker compose up --build
-   ```
-
-3. **Open the app**
-   Visit http://localhost:5173 in your browser.
-
-That's it! On the first run, the backend automatically creates the database schema and imports a bundled sample dataset (~70 products across all 11 categories) so the app is immediately usable.
-
-*(Optional: If you want the full 27,000+ product dataset, see `data/README.md` for instructions on how to download it. The backend will automatically detect and import it if placed in the `data/` folder).*
-
-## Database Setup
-
-The application uses PostgreSQL.
-
-When Docker Compose is executed, the following happens automatically:
-
-1. The PostgreSQL container starts
-2. The backend checks whether the products table already contains data
-3. If empty, the backend looks for the dataset CSV and imports it to seed the database
-4. If data already exists, seeding is skipped, so restarting the application never creates duplicate records
-
-No manual database setup is required.
+- [Installation & Setup](docs/Install.md)
+- [Project Architecture & Tech Stack](docs/Architecture.md)
+- [API Endpoints & Recommendation Engine Logic](docs/Api_response.md)
 
 ## How To Use
 
 Enter your preferences on the form: budget, category, brand, purpose, and minimum rating. Click Get Recommendations to see a ranked list of matching products, each with a match score and a plain-English reason. Click into any product to see its full details and similar products. Add items to your cart to see if a genuinely better-rated alternative exists for each one.
-
-## How The Recommendation Engine Works
-
-1. The user submits their preferences through the React form
-2. FastAPI receives the request and validates it using Pydantic schemas
-3. The backend filters products by budget, category, brand, and minimum rating
-4. If the user typed a purpose, the text is converted into a TF-IDF vector and compared against every candidate product description using cosine similarity
-5. Each surviving product is scored out of 100: with a purpose, 50 percent text similarity, 30 percent rating, 20 percent budget headroom. Without a purpose, 60 percent rating, 40 percent budget headroom
-6. Results are sorted by score and the top 20 are returned as JSON, each with a plain-English reason attached
-7. React renders the ranked list
-
-## API Endpoints
-
-Method: GET, Endpoint: /health, Description: Check if the API process is running
-
-Method: GET, Endpoint: /health/db, Description: Check if the database is reachable
-
-Method: GET, Endpoint: /products, Description: List products, optional filters for category, brand, max_price, min_rating
-
-Method: GET, Endpoint: /products/{id}, Description: Get full details for one product
-
-Method: GET, Endpoint: /products/{id}/similar, Description: Get the 4 most similar products by description
-
-Method: GET, Endpoint: /products/{id}/alternatives, Description: Get up to 3 genuinely better-rated alternatives
-
-Method: POST, Endpoint: /recommend, Description: Generate ranked recommendations from budget, category, brand, min_rating, and purpose
-
-## Troubleshooting
-
-Docker will not start
-
-docker compose down
-docker compose up --build
-
-Database connection error
-
-Confirm the following: the PostgreSQL container is running, the Docker network was created successfully, and the backend only starts after PostgreSQL has passed its health check.
-
-No results appear on any search
-
-Check the backend logs with docker compose logs backend --tail 20. If it says the dataset was not found, confirm the CSV is placed at data/BigBasket Products.csv exactly as described in data/README.md.
 
 ## AI Usage Declaration
 
