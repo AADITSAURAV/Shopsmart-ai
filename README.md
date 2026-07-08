@@ -125,6 +125,7 @@ Method: GET, Endpoint: /products/{id}/similar, Description: Get the 4 most simil
 Method: GET, Endpoint: /products/{id}/alternatives, Description: Get up to 3 genuinely better-rated alternatives
 
 Method: POST, Endpoint: /recommend, Description: Generate ranked recommendations from budget, category, brand, min_rating, and purpose
+
 ## Troubleshooting
 
 Docker will not start
@@ -142,7 +143,11 @@ Check the backend logs with docker compose logs backend --tail 20. If it says th
 
 ## AI Usage Declaration
 
-To be fully transparent, I used Claude to help build parts of this project, including debugging Docker and environment issues, writing docstrings and code comments, drafting this README, and working through design decisions like why content-based filtering was the right fit given the available data. The database schema, the API design, the recommendation scoring logic, and the React frontend structure were all built and understood by me, and I can explain and justify the code in this project during review.
+To be fully transparent about how this project was built: I worked with Claude, an AI assistant, as a hands-on collaborator throughout this project, not just as a reference tool. Claude wrote a substantial portion of the actual code, including the backend API endpoints, the ML training script, and the React components.
+
+My role was direction, decisions, and verification. I chose the project category and dataset, decided on content-based filtering over collaborative filtering once I understood the dataset had no purchase history to support it, and made the call to keep the shopping cart in memory rather than add accounts and persistence that were out of scope. I personally ran and tested every command in this project in my own terminal, and caught real issues along the way, including a stale build cache that broke a feature after it had already worked once, and a filename mismatch that caused empty results on a machine other than my own. I can explain the reasoning behind the major decisions in this project, including why the model uses TF-IDF specifically, how the scoring weights work, and where the known limitations are.
+
+The brief for this assessment explicitly allows the use of AI tools, and I chose to use Claude directly and extensively rather than write everything unaided. I am being upfront about the extent of that here rather than understating it.
 
 ## Author
 
