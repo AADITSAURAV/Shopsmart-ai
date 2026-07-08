@@ -1,18 +1,27 @@
-# Dataset
+# Smart Cart
 
-**Source:** [BigBasket Entire Product List (~28K datapoints)](https://www.kaggle.com/datasets/surajjha101/bigbasket-entire-product-list-28k-datapoints)
+## Project Overview
 
-## Out-of-the-box behaviour
+Smart Cart is a full stack web application that helps users discover grocery products that actually fit their budget and what they are looking for. Instead of just filtering a product list, the app uses a scikit-learn content-based recommendation model to score and rank real products from a live database, and explains why each one was recommended.
 
-A sample dataset (`sample_products.csv`) is committed to this repo and covers all 11 product categories (~70 products). The backend loads it automatically when the full CSV is not present, so the app works immediately after `docker compose up --build` with no setup.
+The system is built using React and TypeScript for the frontend, FastAPI for the backend, and PostgreSQL for the database. The entire application runs through Docker, with each part of the system running in its own container.
 
-## For the full 27,000+ product experience
+## Why I Chose This Project
 
-1. Download the dataset from the Kaggle link above
-2. Extract the zip file
-3. Place the CSV here as `data/BigBasket Products.csv`
-4. Run `docker compose up --build`
+The brief allowed three categories: Matching, Recommendation, or Image Recognition. Grocery shopping is a natural fit for a recommendation system, since people usually do not know the exact product they want, just roughly what they are looking for, their budget, and what matters to them, like rating or brand.
 
-The backend detects the full CSV on startup and imports it automatically — no manual command needed.
+I wanted to build something that does not just filter a list, but actually scores how well each product fits what the user asked for, and explains that score in plain English, so it does not feel like a black box.
 
-The full CSV is not committed to git because it is 16 MB and not ours to redistribute.
+## What Makes This Project Special
+
+Instead of relying on a single rigid filter, the recommendation engine dynamically scores every candidate product out of 100. If a user types a purpose like "healthy breakfast snack", the engine compares that phrase against real product descriptions using a trained TF-IDF model, not just a keyword match.
+
+The scoring combines text similarity, rating, and how far under budget a product is, with different weights depending on whether the user typed a purpose or not. Every recommended product also gets a plain-English reason attached, so the ranking is explainable, not just a number.
+
+## Features
+
+- Type in what you are looking for, set a budget, and optionally filter by category, brand, and minimum rating
+- Get back real ranked products with a match score out of 100 and a plain-English reason for each one
+- Click into any product to see its full details and 4 similar products, powered by the same ML model
+- Add items to a cart, which shows a genuinely better-rated alternative for each item if one exists, same category, similar product, reasonably priced
+- Runs entirely with docker compose up, no manual setup beyond downloading the dataset
