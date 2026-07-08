@@ -125,3 +125,34 @@ Method: GET, Endpoint: /products/{id}/similar, Description: Get the 4 most simil
 Method: GET, Endpoint: /products/{id}/alternatives, Description: Get up to 3 genuinely better-rated alternatives
 
 Method: POST, Endpoint: /recommend, Description: Generate ranked recommendations from budget, category, brand, min_rating, and purpose
+## Troubleshooting
+
+Docker will not start
+
+docker compose down
+docker compose up --build
+
+Database connection error
+
+Confirm the following: the PostgreSQL container is running, the Docker network was created successfully, and the backend only starts after PostgreSQL has passed its health check.
+
+No results appear on any search
+
+Check the backend logs with docker compose logs backend --tail 20. If it says the dataset was not found, confirm the CSV is placed at data/BigBasket Products.csv exactly as described in data/README.md.
+
+## AI Usage Declaration
+
+To be fully transparent, I used Claude to help build parts of this project, including debugging Docker and environment issues, writing docstrings and code comments, drafting this README, and working through design decisions like why content-based filtering was the right fit given the available data. The database schema, the API design, the recommendation scoring logic, and the React frontend structure were all built and understood by me, and I can explain and justify the code in this project during review.
+
+## Author
+
+Aadit Saurav
+GitHub: https://github.com/AADITSAURAV
+
+## Acknowledgements
+
+This project was developed as part of a recruitment assessment.
+
+Dataset: BigBasket Entire Product List by surajjha101 on Kaggle.
+
+Open source technologies used: FastAPI, React, Docker, PostgreSQL, SQLAlchemy, Pydantic, Pandas, Scikit-learn.
