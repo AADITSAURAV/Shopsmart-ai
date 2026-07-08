@@ -70,3 +70,32 @@ The frontend never talks to the database directly. Every request goes through th
 Frontend: http://localhost:5173
 Backend API: http://localhost:8000
 Interactive API Documentation: http://localhost:8000/docs
+
+## How To Install
+
+In short:
+
+git clone https://github.com/AADITSAURAV/Shopsmart-ai.git
+cd Shopsmart-ai
+docker compose up --build
+
+Then open http://localhost:5173
+
+Full setup instructions, prerequisites, and how to get the dataset are in the Getting Started section above and in data/README.md.
+
+## Database Setup
+
+The application uses PostgreSQL.
+
+When Docker Compose is executed, the following happens automatically:
+
+1. The PostgreSQL container starts
+2. The backend checks whether the products table already contains data
+3. If empty, the backend looks for the dataset CSV and imports it to seed the database
+4. If data already exists, seeding is skipped, so restarting the application never creates duplicate records
+
+No manual database setup is required.
+
+## How To Use
+
+Enter your preferences on the form: budget, category, brand, purpose, and minimum rating. Click Get Recommendations to see a ranked list of matching products, each with a match score and a plain-English reason. Click into any product to see its full details and similar products. Add items to your cart to see if a genuinely better-rated alternative exists for each one.
