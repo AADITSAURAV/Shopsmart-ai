@@ -57,13 +57,19 @@ Development Tools
 ## Project Architecture
 
 User
-React Frontend
-REST API Requests
-FastAPI Backend
-Recommendation Engine, TF-IDF plus cosine similarity
+  |
+  v
+React Frontend (localhost:5173)
+  |
+  v  REST API requests
+FastAPI Backend (localhost:8000)
+  |
+  v
+Recommendation Engine
+(TF-IDF + Cosine Similarity)
+  |
+  v
 PostgreSQL Database
-
-The frontend never talks to the database directly. Every request goes through the backend first, which keeps the system organized and easier to maintain.
 
 ## Application URLs
 
