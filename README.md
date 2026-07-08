@@ -24,7 +24,7 @@ The scoring combines text similarity, rating, and how far under budget a product
 - Get back real ranked products with a match score out of 100 and a plain-English reason for each one
 - Click into any product to see its full details and 4 similar products, powered by the same ML model
 - Add items to a cart, which shows a genuinely better-rated alternative for each item if one exists, same category, similar product, reasonably priced
-- Runs entirely with docker compose up, no manual setup beyond downloading the dataset
+- Runs entirely with `docker compose up --build`, with zero manual setup required
 
 ## Technology Stack
 
@@ -56,12 +56,22 @@ Development Tools
 
 ## Project Architecture
 
-User
-React Frontend
-REST API Requests
-FastAPI Backend
-Recommendation Engine, TF-IDF plus cosine similarity
-PostgreSQL Database
+The application is split into three independent services, each running in its own Docker container, connected through a custom Docker network.
+
+    User
+      |
+      v
+    React Frontend (localhost:5173)
+      |
+      v  REST API requests
+    FastAPI Backend (localhost:8000)
+      |
+      v
+    Recommendation Engine
+    (TF-IDF + Cosine Similarity)
+      |
+      v
+    PostgreSQL Database
 
 The frontend never talks to the database directly. Every request goes through the backend first, which keeps the system organized and easier to maintain.
 
@@ -73,15 +83,25 @@ Interactive API Documentation: http://localhost:8000/docs
 
 ## How To Install
 
-In short:
+The project is completely self-contained. You do not need to install Node, Python, or Postgres on your machine, and you do not need to manually download any datasets.
 
-git clone https://github.com/AADITSAURAV/Shopsmart-ai.git
-cd Shopsmart-ai
-docker compose up --build
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/AADITSAURAV/Shopsmart-ai.git
+   cd Shopsmart-ai
+   ```
 
-Then open http://localhost:5173
+2. **Run it with Docker**
+   ```bash
+   docker compose up --build
+   ```
 
-Full setup instructions, prerequisites, and how to get the dataset are in the Getting Started section above and in data/README.md.
+3. **Open the app**
+   Visit http://localhost:5173 in your browser.
+
+That's it! On the first run, the backend automatically creates the database schema and imports a bundled sample dataset (~70 products across all 11 categories) so the app is immediately usable.
+
+*(Optional: If you want the full 27,000+ product dataset, see `data/README.md` for instructions on how to download it. The backend will automatically detect and import it if placed in the `data/` folder).*
 
 ## Database Setup
 
